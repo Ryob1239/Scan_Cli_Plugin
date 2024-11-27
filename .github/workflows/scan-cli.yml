@@ -21,14 +21,7 @@ jobs:
       - name: Ensure report directory exists
         run: mkdir -p ./reports
 
-      # 3. Docker login para acceder a Docker Hub utilizando GitHub Secrets
-      - name: Docker login
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # 4. Autenticación en GitHub Container Registry (GHCR) para imágenes privadas
+      # 3. Autenticación en GitHub Container Registry (GHCR) usando GitHub Secrets
       - name: Authenticate to GHCR
         uses: docker/login-action@v2
         with:
@@ -36,26 +29,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      # 5. Configurar Docker y construir la imagen
+      # 4. Configurar Docker y construir la imagen
       - name: Build Docker Image
         run: |
           docker build -t scan-cli-plugin:latest .
 
-      # 6. Ejecutar análisis con Docker Scout (Imagen correcta)
+      # 5. Ejecutar análisis con Docker Scout (Imagen correcta)
       - name: Run Docker Scout CVE Scan
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             ghcr.io/docker/scout-cli:latest cves scan-cli-plugin:latest > ./reports/report.json
 
-      # 7. Subir el reporte como artefacto
+      # 6. Subir el reporte como artefacto
       - name: Upload Report
         uses: actions/upload-artifact@v3
         with:
           name: scan-cli-report
           path: ./reports/report.json
 
-      # 8. Notificar a Slack
+      # 7. Notificar a Slack
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.23.0
         with:
