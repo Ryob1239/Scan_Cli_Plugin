@@ -31,14 +31,19 @@ jobs:
       run: |
         docker scout cves scan-cli-plugin:latest --report ./reports/report.json
 
-    # 5. Subir el reporte como artefacto
+    # 5. Verificar si el archivo de reporte fue creado
+    - name: List report directory files
+      run: |
+        ls -alh ./reports
+
+    # 6. Subir el reporte como artefacto
     - name: Upload Report
       uses: actions/upload-artifact@v3
       with:
         name: scan-cli-report
         path: ./reports/report.json
 
-    # 6. Notificar a Slack
+    # 7. Notificar a Slack
     - name: Notify Slack
       uses: slackapi/slack-github-action@v1.23.0
       with:
