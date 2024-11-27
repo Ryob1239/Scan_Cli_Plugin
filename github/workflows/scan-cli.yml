@@ -17,24 +17,28 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. Configurar Docker
+    # 2. Crear el directorio de reportes
+    - name: Create report directory
+      run: mkdir -p ./reports
+
+    # 3. Configurar Docker y construir la imagen
     - name: Build Docker Image
       run: |
         docker build -t scan-cli-image .
 
-    # 3. Ejecutar análisis con Docker Scout
+    # 4. Ejecutar análisis con Docker Scout
     - name: Run Docker Scout CVE Scan
       run: |
         docker scout cves scan-cli-plugin:latest --report ./reports/report.json
 
-    # 4. Guardar el reporte como artefacto
+    # 5. Subir el reporte como artefacto
     - name: Upload Report
       uses: actions/upload-artifact@v3
       with:
         name: scan-cli-report
         path: ./reports/report.json
 
-    # 5. Notificar a Slack
+    # 6. Notificar a Slack
     - name: Notify Slack
       uses: slackapi/slack-github-action@v1.23.0
       with:
