@@ -21,28 +21,34 @@ jobs:
       - name: Ensure report directory exists
         run: mkdir -p ./reports
 
-      # 3. Autenticarse en Docker Hub
-      - name: Docker Login
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      # 3. Autenticarse en Docker Hub usando login-action
+      - name: Login to Docker
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 4. Debug del entorno Docker
+      # 4. Configurar Docker Buildx (por si necesitas usarlo en el futuro)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 5. Debug del entorno Docker
       - name: Debug Docker Environment
         run: |
           docker version
           docker info
           ls -l /var/run/docker.sock
 
-      # 5. Ejecutar el análisis con Docker Scout
+      # 6. Ejecutar el análisis con Docker Scout
       - name: Run Docker Scout CVE Scan
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             docker/scout-cli:latest cves scan-cli-plugin:latest > ./reports/report.json
 
-      # 6. Subir el reporte como artefacto
+      # 7. Subir el reporte como artefacto
       - name: Upload Report
         uses: actions/upload-artifact@v3
         with:
           name: scan-cli-report
-          path: ./reports/report.json
+          path: ./reports/report.jsonS
