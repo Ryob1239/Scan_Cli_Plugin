@@ -22,23 +22,18 @@ jobs:
         run: mkdir -p ./reports
 
       # 3. Autenticación en Docker Hub
-      - name: Docker Hub Login
+      - name: Docker Login
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # 4. Configurar Docker Scout
-      - name: Configure Docker Scout Authentication
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker scout login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      # 5. Ejecutar el análisis con Docker Scout
+      # 4. Ejecutar el análisis con Docker Scout
       - name: Run Docker Scout CVE Scan
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             docker/scout-cli:latest cves scan-cli-plugin:latest > ./reports/report.json
 
-      # 6. Subir el reporte como artefacto
+      # 5. Subir el reporte como artefacto
       - name: Upload Report
         uses: actions/upload-artifact@v3
         with:
