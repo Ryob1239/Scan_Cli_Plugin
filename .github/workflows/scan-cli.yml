@@ -36,9 +36,6 @@ jobs:
       # 5. Ejecutar análisis con Docker Scout (Imagen correcta)
       - name: Run Docker Scout CVE Scan
         run: |
-          # Autenticación para Docker Scout
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          
           # Ejecutar el análisis con Docker Scout
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
