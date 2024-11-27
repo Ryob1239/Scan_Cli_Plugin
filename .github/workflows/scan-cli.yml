@@ -22,7 +22,7 @@ jobs:
         run: mkdir -p ./reports
 
       # 3. Autenticación para Docker Hub
-      - name: Docker login
+      - name: Docker Hub Login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
