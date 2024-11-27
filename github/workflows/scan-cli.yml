@@ -1,35 +1,35 @@
 name: Scan CLI CI/CD
-
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
+push:
+branches:
+- main
+pull_request:
+branches:
+- main
 jobs:
-  scan-cli:
-    runs-on: ubuntu-latest
-
-    steps:
-    # 1. Verificar el código
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # 2. Configurar Docker
-    - name: Build Docker Image
-      run: |
-        docker build -t scan-cli-image .
-
-    # 3. Ejecutar análisis
-    - name: Run Scan CLI
-      run: |
-        docker run --rm scan-cli-image ./scan-cli-plugin analyze --source ./src --report ./report.json
-
-    # 4. Guardar el reporte como artefacto
-    - name: Upload Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: scan-cli-report
-        path: ./report.json
+scan-cli:
+runs-on: ubuntu-latest
+steps:
+# 1. Verificar el código
+- name: Checkout code
+uses: actions/checkout@v3
+# 2. Configurar Docker
+- name: Build Docker Image
+run: |
+docker build -t scan-cli-image .
+# 3. Ejecutar análisis
+- name: Run Scan CLI
+run: |
+docker scout cves scan-cli-plugin:latest --report ./reports/report.json
+# 4. Guardar el reporte como artefacto
+- name: Upload Report
+uses: actions/upload-artifact@v3
+with:
+name: scan-cli-report
+path: ./report.json
+- name: Notify Slack
+  uses: slackapi/slack-github-action@v1.23.0
+  with:
+    channel-id: ${{ secrets.SLACK_CHANNEL }}
+    slack-token: ${{ secrets.SLACK_TOKEN }}
+    text: "El análisis de código se ha completado correctamente."
