@@ -17,8 +17,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. Crear el directorio de reportes
-    - name: Create report directory
+    # 2. Crear el directorio de reportes si no existe
+    - name: Ensure report directory exists
       run: mkdir -p ./reports
 
     # 3. Configurar Docker y construir la imagen
