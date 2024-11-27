@@ -21,19 +21,19 @@ jobs:
       - name: Ensure report directory exists
         run: mkdir -p ./reports
 
-      # 3. Docker login para acceder a Docker Hub utilizando GitHub Secrets
+      # 3. Autenticación para Docker Hub utilizando GitHub Secrets
       - name: Docker login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 4. Configurar Docker y construir la imagen
+      # 4. Construir la imagen de Docker (si es necesario)
       - name: Build Docker Image
         run: |
           docker build -t scan-cli-plugin:latest .
 
-      # 5. Ejecutar análisis con Docker Scout (Imagen correcta)
+      # 5. Ejecutar el análisis con Docker Scout (Imagen correcta)
       - name: Run Docker Scout CVE Scan
         run: |
           docker run --rm \
