@@ -25,8 +25,8 @@ jobs:
       - name: Docker login
         uses: docker/login-action@v2
         with:
-          username: ${{ ryob1289 }}
-          password: ${{ dckr_pat_0pxQbMs9m957-KDxwy9ycoDhQ8w }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       # 4. Configurar Docker y construir la imagen
       - name: Build Docker Image
@@ -36,9 +36,7 @@ jobs:
       # 5. Ejecutar análisis con Docker Scout (Imagen correcta)
       - name: Run Docker Scout CVE Scan
         run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            docker/scan-cli-plugin:latest cves scan-cli-plugin:latest > ./reports/report.json
+          docker scout cves scan-cli-plugin:latest > ./reports/report.json
 
       # 6. Subir el reporte como artefacto
       - name: Upload Report
