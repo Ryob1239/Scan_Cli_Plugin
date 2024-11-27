@@ -33,12 +33,12 @@ jobs:
           docker info
           ls -l /var/run/docker.sock
 
-      # 5. Ejecutar el análisis con tu imagen `scan-cli-plugin:latest`
-      - name: Run CVE Scan
+      # 5. Ejecutar el análisis con Docker Scout
+      - name: Run Docker Scout CVE Scan
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            scan-cli-plugin:latest scan scan-cli-image:latest > ./reports/report.json
+            docker/scout-cli:latest cves scan-cli-plugin:latest > ./reports/report.json
 
       # 6. Subir el reporte como artefacto
       - name: Upload Report
