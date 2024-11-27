@@ -31,7 +31,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            docker/scan-cli:latest cves scan-cli-plugin:latest > ./reports/report.json
+            docker/scan-cli-plugin:latest cves scan-cli-plugin:latest > ./reports/report.json
 
       # 5. Subir el reporte como artefacto
       - name: Upload Report
