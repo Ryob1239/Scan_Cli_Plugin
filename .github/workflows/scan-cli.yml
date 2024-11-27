@@ -17,33 +17,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Instalar Docker Scout
-      - name: Install Docker Scout plugin
-        run: |
-          docker plugin install --alias scout docker-scout
-
-      # 3. Crear el directorio de reportes si no existe
+      # 2. Crear el directorio de reportes si no existe
       - name: Ensure report directory exists
         run: mkdir -p ./reports
 
-      # 4. Configurar Docker y construir la imagen
+      # 3. Configurar Docker y construir la imagen
       - name: Build Docker Image
         run: |
           docker build -t scan-cli-plugin:latest .
 
-      # 5. Ejecutar análisis con Docker Scout
+      # 4. Ejecutar análisis con Docker Scout (como contenedor)
       - name: Run Docker Scout CVE Scan
         run: |
-          docker scout cves scan-cli-plugin:latest > ./reports/report.json
+          docker run --rm --privileged \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            docker/docker-scout cves scan-cli-plugin:latest > ./reports/report.json
 
-      # 6. Subir el reporte como artefacto
+      # 5. Subir el reporte como artefacto
       - name: Upload Report
         uses: actions/upload-artifact@v3
         with:
           name: scan-cli-report
           path: ./reports/report.json
 
-      # 7. Notificar a Slack
+      # 6. Notificar a Slack
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.23.0
         with:
