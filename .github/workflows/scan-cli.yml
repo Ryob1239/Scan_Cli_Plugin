@@ -21,12 +21,12 @@ jobs:
       - name: Ensure report directory exists
         run: mkdir -p ./reports
 
-      # 3. Docker login para Docker Hub utilizando GitHub Secrets
+      # 3. Docker login para acceder a Docker Hub utilizando GitHub Secrets
       - name: Docker login
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # Nombre de usuario de Docker Hub
-          password: ${{ secrets.DOCKER_PASSWORD }}  # Personal Access Token de Docker Hub
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       # 4. Configurar Docker y construir la imagen
       - name: Build Docker Image
@@ -47,10 +47,17 @@ jobs:
           name: scan-cli-report
           path: ./reports/report.json
 
-      # 7. Notificar a Slack
-      - name: Notify Slack
-        uses: slackapi/slack-github-action@v1.23.0
+      # 7. Enviar un comentario en el PR con el estado del trabajo
+      - name: Post status update to PR
+        uses: actions/github-script@v6
         with:
-          channel-id: ${{ secrets.SLACK_CHANNEL }}
-          slack-token: ${{ secrets.SLACK_TOKEN }}
-          text: "El análisis de código se ha completado correctamente."
+          script: |
+            const pr = github.context.payload.pull_request;
+            if (pr) {
+              await github.rest.issues.createComment({
+                issue_number: pr.number,
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                body: "El análisis de seguridad de Docker Scout ha finalizado. El reporte se ha generado y subido como artefacto."
+              });
+            }
