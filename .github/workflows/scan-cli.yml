@@ -36,7 +36,6 @@ jobs:
       # 5. Ejecutar análisis con Docker Scout (Imagen correcta)
       - name: Run Docker Scout CVE Scan
         run: |
-          # Ejecutar el análisis con Docker Scout
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             docker/scout-cli:latest cves scan-cli-plugin:latest > ./reports/report.json
