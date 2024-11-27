@@ -21,13 +21,12 @@ jobs:
       - name: Ensure report directory exists
         run: mkdir -p ./reports
 
-      # 3. Docker login para GHCR usando el token PAT
-      - name: Authenticate to GHCR
+      # 3. Docker login para Docker Hub utilizando GitHub Secrets
+      - name: Docker login
         uses: docker/login-action@v2
         with:
-          registry: ghcr.io/docker/scout-cli:latest
-          username: ${{ github.actor }}  # Obtiene el nombre de usuario de GitHub
-          password: ${{ secrets.GHCR_TOKEN }}  # Token configurado en los Secrets
+          username: ${{ secrets.DOCKER_USERNAME }}  # Nombre de usuario de Docker Hub
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Personal Access Token de Docker Hub
 
       # 4. Configurar Docker y construir la imagen
       - name: Build Docker Image
@@ -39,7 +38,7 @@ jobs:
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            ghcr.io/docker/scout-cli:latest cves scan-cli-plugin:latest > ./reports/report.json
+            docker/scout-cli:latest cves scan-cli-plugin:latest > ./reports/report.json
 
       # 6. Subir el reporte como artefacto
       - name: Upload Report
