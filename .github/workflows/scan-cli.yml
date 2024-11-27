@@ -21,26 +21,29 @@ jobs:
       - name: Ensure report directory exists
         run: mkdir -p ./reports
 
-      # 3. Configurar Docker y construir la imagen
+      # 3. Instalar Docker Scout CLI
+      - name: Install Docker Scout CLI via npm
+        run: |
+          npm install -g @docker/docker-scout-cli
+
+      # 4. Configurar Docker y construir la imagen
       - name: Build Docker Image
         run: |
           docker build -t scan-cli-plugin:latest .
 
-      # 4. Ejecutar análisis con Docker Scout (Imagen correcta)
+      # 5. Ejecutar análisis con Docker Scout (CLI)
       - name: Run Docker Scout CVE Scan
         run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            docker/scan-cli-plugin:latest cves scan-cli-plugin:latest > ./reports/report.json
+          docker-scout cves scan-cli-plugin:latest > ./reports/report.json
 
-      # 5. Subir el reporte como artefacto
+      # 6. Subir el reporte como artefacto
       - name: Upload Report
         uses: actions/upload-artifact@v3
         with:
           name: scan-cli-report
           path: ./reports/report.json
 
-      # 6. Notificar a Slack
+      # 7. Notificar a Slack
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.23.0
         with:
